@@ -1,2 +1,288 @@
 # my-qtile-setup
 Qtile desktop environment setup scripts
+
+#+TITLE: Debian Qtile Install
+#+AUTHOR: GaurAfro
+#+DATE: 27-07-2023
+#+STARTUP: content
+#+DESCRIPTION: This are my notes related to a clean installation of Debian
+#+OPTIONS: toc:3
+
+* TABLE OF CONTENTS :toc:
+- [[#the-installation-of-the-os][the installation of the os]]
+  - [[#expert-installation-for-btfs-other-things][expert installation for btfs other things]]
+  - [[#login-manager-display-manager][login manager (display manager)]]
+    - [[#here-are-the-steps-to-install-it][here are the steps to install it:]]
+  - [[#window-manager][window manager]]
+  - [[#system-tray-and-widgets][system tray and widgets]]
+  - [[#application-launcher][application launcher]]
+  - [[#file-manager][file manager]]
+  - [[#terminal-emulator][terminal emulator]]
+  - [[#notifications][notifications]]
+  - [[#wallpapers][wallpapers]]
+  - [[#network-manager][network manager]]
+  - [[#audio][audio]]
+  - [[#power-management][power management]]
+  - [[#bluetooth][bluetooth]]
+  - [[#clipboard-manager][clipboard manager]]
+  - [[#text-editors][text editors]]
+  - [[#multimedia][multimedia]]
+  - [[#autostart-script][autostart script]]
+  - [[#fonts-and-icons][fonts and icons]]
+  - [[#input-devices][input devices]]
+  - [[#archiving-tools][archiving tools]]
+  - [[#software-management][software management]]
+  - [[#browser][browser]]
+- [[#other-stuff][other stuff]]
+  - [[#installing-software-stores][installing software stores]]
+    - [[#snap][snap]]
+    - [[#flatpak][flatpak]]
+    - [[#using-synaptic-package-manager][using synaptic package manager]]
+  - [[#if-you-want-to-install-different-desktop-environments][if you want to install different desktop environments]]
+  - [[#adding-the-backports-repository-to-apt][adding the backports repository to apt]]
+
+* the installation of the os
+
+** expert installation for btfs other things
+
+** login manager (display manager)
+- a display manager presents the user with a graphical login screen. popular choices include:
+  - lightdm
+  - sddm
+  - lxdm
+  - gdm (heavier, typically used with gnome)
+  - ly display manager with console ui (lightweight tui, have to =make= install it.
+- without a display manager, you'll have to start your wm manually from the console using commands like =startx=.
+- my choice is [[https://github.com/fairyglade/ly][ly: display manager with console ui]]
+*** here are the steps to install it:
+1. upgrade the system using nala:
+   #+begin_src bash
+   sudo nala upgrade -y
+   #+end_src
+
+2. clone the repository:
+   #+begin_src bash
+   git clone --recurse-submodules https://github.com/fairyglade/ly
+   #+end_src
+
+3. change the directory to ly:
+   #+begin_src bash
+   cd ly
+   #+end_src
+
+4. compile the source:
+   #+begin_src bash
+   make
+   #+end_src
+
+5. test in the configured tty (tty2 by default) or a terminal emulator (but desktop environments won't start):
+   #+begin_src bash
+   make run
+   #+end_src
+
+6. install ly and the provided systemd service file:
+   #+begin_src bash
+   make install installsystemd
+   #+end_src
+
+7. *optional*: remove the existing display manager service link:
+   #+begin_src bash
+   sudo rm /etc/systemd/system/display-manager.service
+   #+end_src
+
+8. enable the service:
+   #+begin_src bash
+   systemctl enable ly.service
+   #+end_src
+
+9. if you need to switch between ttys after ly's start, you also have to disable getty on ly's tty to prevent "login" from spawning on top of it:
+   #+begin_src bash
+   systemctl disable getty@tty2.service
+   #+end_src
+
+10. the script to automate it:
+   #+begin_src bash
+#!/bin/bash
+
+# upgrading the system using nala
+echo "upgrading the system using nala..."
+sudo nala upgrade -y
+
+# checking if timeout is available
+echo "checking if timeout is installed..."
+if ! command -v timeout &> /dev/null; then
+    echo "timeout could not be found. installing..."
+    sudo nala install timeout -y
+else
+    echo "timeout is already installed."
+fi
+
+# installing other dependencies
+echo "installing dependencies: build-essential, libpam0g-dev, libxcb-xkb-dev, git..."
+sudo nala install build-essential libpam0g-dev libxcb-xkb-dev git -y
+
+# cloning the repository
+echo "cloning the ly repository..."
+git clone --recurse-submodules https://github.com/fairyglade/ly
+
+# changing the directory to `ly`
+echo "changing directory to 'ly'..."
+cd ly
+
+# compiling the source
+echo "compiling the source..."
+make
+
+# testing in the configured tty or terminal emulator
+echo "testing in the configured tty (tty2 by default) or terminal emulator..."
+timeout --signal=sigint 3s make run
+
+# installing ly and the systemd service file
+echo "installing ly and the provided systemd service file..."
+sudo make install installsystemd
+
+# checking if the display manager service link exists and delete it
+if [ -f "/etc/systemd/system/display-manager.service" ]; then
+    echo "removing /etc/systemd/system/display-manager.service..."
+    sudo rm /etc/systemd/system/display-manager.service
+else
+    echo "/etc/systemd/system/display-manager.service does not exist."
+fi
+
+# enabling the service
+echo "enabling the ly service..."
+sudo systemctl enable ly.service
+
+# disabling getty on ly's tty
+echo "disabling getty on ly's tty to prevent 'login' from spawning on top of it..."
+sudo systemctl disable getty@tty2.service
+
+echo "script completed!"
+    #+end_src
+
+
+** window manager
+- this is the core component that handles window placement, resizing, and decorations.
+- examples: i3, openbox, awesome, bspwm, xmonad, etc.
+
+** system tray and widgets
+- tools like polybar, tint2, or xfce4-panel provide system tray functionality.
+
+** application launcher
+- for launching applications from a hotkey or command:
+  - rofi
+  - dmenu
+  - gmrun
+
+** file manager
+- pcmanfm, thunar, ranger (tui), nemo, etc.
+
+** terminal emulator
+- urxvt, alacritty, termite, gnome terminal, etc.
+
+** notifications
+- dunst is a lightweight notification daemon.
+
+** wallpapers
+- tools like feh, nitrogen, or pcmanfm --set-wallpaper.
+
+** network manager
+- for wi-fi and wired connections. choices include:
+  - networkmanager with nm-applet
+  - wicd
+  - connman
+
+** audio
+ - pulseaudio for audio management.
+ - pavucontrol for a gui mixer.
+ - alsa-utils for alsa without pulseaudio.
+
+** power management
+ - lxsession or xfce4-power-manager for managing power settings, screen brightness, and auto-suspend.
+ - acpi for battery status and other acpi events.
+
+** bluetooth
+ - bluez for the core bluetooth protocol stack.
+ - blueman for a gui bluetooth manager.
+
+** clipboard manager
+ - clipit, parcellite, or xclip.
+
+** text editors
+ - vim, nano, neovim, emacs, etc.
+
+** multimedia
+ - mpv or vlc for video playback.
+ - cmus or rhythmbox for audio playback.
+
+** autostart script
+ - you'll likely want certain applications or scripts to start automatically when you log in. this can be managed through an ~/.xinitrc file or the wm's autostart configuration.
+
+** fonts and icons
+ - consider installing ttf-dejavu, ttf-liberation, or other font packages for better font rendering.
+ - lxappearance for changing gtk themes and icons.
+
+** input devices
+ - xinput for configuring touchpads, mice, and keyboards.
+ - ibus or fcitx for input method editors (ime) for languages like chinese, japanese, and korean.
+
+** archiving tools
+ - for extracting and compressing: unrar, unzip, tar, gzip, etc.
+
+** software management
+ - apt or synaptic (gui) for debian package management.
+
+** browser
+    - firefox, chromium, qutebrowser, etc.
+
+* other stuff
+
+
+** installing software stores
+
+*** snap
+instaling snap with plugins to be shown for gnome software store.
+#+begin_src bash
+  sudo apt install snapd gnome-software-plugin-snap -y
+#+end_src
+*** flatpak
+installing flatpak with plugins to be shown for gnome and kde plasma software stores.
+#+begin_src bash
+  sudo apt install flatpak gnome-software-plugin-flatpak kde-config-flatpak -y
+#+end_src
+
+*** using synaptic package manager
+when using the synaptic package manager you can search and select what a packages to install.
+these are not alway on the apt repositories and you can click the ~file~ menu and select ~generate package download script~.
+then to run the script:
+#+begin_src bash
+  ./thescript-name.sh
+#+end_src
+this allows you to save a ~*.sh~ file that you can execute in the terminal and use for installing your setup in 1 master script.
+offcource you can stil just use the gui synaptic package manager.
+
+** if you want to install different desktop environments
+use the tasksel
+#+begin_src bash
+  sudo tasksel
+#+end_src
+then just select the desktops that you want using ~space~ and ~enter~ to install.
+
+** adding the backports repository to apt
+there are 4 steps manually
+1. make and open a file in ~/etc/apt/sources.d/~ called ~backports.list~ with your terminal editor.
+   #+begin_src bash
+     sudo nvim /etc/apt/sources.list.d/backports.list
+   #+end_src
+2. then paste the following line.
+   #+begin_src txt
+     deb http://deb.debian.org/debian bookworm-backports main
+   #+end_src
+   use vim command:
+   #+begin_src vim
+     :wq
+   #+end_src
+4. check it with:
+   #+begin_src bash
+     sudo apt update
+   #+end_src
