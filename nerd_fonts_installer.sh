@@ -25,7 +25,7 @@ fonts=(
 
 for font in ${fonts[@]}
 do
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/$font
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/${font}.zip
 	unzip $font -d $HOME/.local/share/fonts/$font/
     rm $font
 done
