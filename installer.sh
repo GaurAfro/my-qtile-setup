@@ -92,9 +92,12 @@ bash ~/my-qtile-setup/ly-install.sh
 ## These two scripts will install nerdfonts and copy my configuration files into the ~/.config directory
 ## Configuration uses 
 
+# Install Nerd Fonts
 bash ~/my-qtile-setup/nerd-fonts-installer.sh
 
-\cp ~/my-qtile-setup/configs/* ~/
+# Copying configuration files
+\cp -Rp ~/my-qtile-setup/configs/.* ~/my-qtile-setup/configs/* ~/
+
 
 
 sudo nala autoremove
