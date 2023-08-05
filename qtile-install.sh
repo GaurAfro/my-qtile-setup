@@ -33,6 +33,7 @@ cat > ./temp << "EOF"
 [Desktop Entry]
 Name=Qtile
 Comment=Qtile Session
+Exec=qtile start
 Type=Application
 Keywords=wm;tiling
 EOF
