@@ -19,8 +19,8 @@ mkdir ~/Repository
 # Install Qtile
 bash ~/my-qtile-setup/qtile-install.sh
 
-# Install suckless-tools, sxhkd, polybar, rofi, dunst, libnotify-bin, unzip
-sudo nala install -y suckless-tools sxhkd polybar rofi dunst libnotify-bin unzip
+# Install suckless-tools, sxhkd, polybar, rofi, dunst, libnotify-bin, unzip and picom
+sudo nala install -y suckless-tools sxhkd polybar rofi dunst libnotify-bin unzip picom
 
 # Support for Intel/AMD microcode
 # sudo nala install -y amd64-microcode
@@ -76,9 +76,6 @@ sudo nala install -y bluez blueman
 
 # sudo systemctl enable cups
 sudo systemctl enable bluetooth
-
-# Packages needed for window manager installation
-sudo nala install -y picom rofi dunst libnotify-bin unzip 
 
 # my favs
 sudo nala install -y numlockx geany geany-plugin-addons geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck geany-plugin-treebrowser geany-plugin-vimode scrot evince pdfarranger transmission-gtk gimp obs-studio mkvtoolnix-gui
