@@ -2,6 +2,10 @@
 #Build prerequisites
 sudo nala install ninja-build gettext cmake unzip curl
 
+# XSessions and qtile.desktop
+if [[ ! -d ~/Repository ]]; then
+    sudo mkdir ~/Repository
+fi
 # Move to Repository directory
 cd ~/Repository
 

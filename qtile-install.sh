@@ -23,6 +23,11 @@ pip install .
 # Install psutil
 pip install psutil
 
+# XSessions and qtile.desktop
+if [[ ! -d /usr/share/xsessions ]]; then
+    sudo mkdir /usr/share/xsessions
+fi
+``
 # Adding qtile.desktop to Lightdm xsessions directory
 cat > ./temp << "EOF"
 [Desktop Entry]
