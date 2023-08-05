@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 sudo nala install unzip -y
-
-mkdir -p ~/.local/share/fonts
+if [[ ! -d ~/.local/share/fonts/ ]]; then
+    mkdir -p ~/.local/share/fonts/
+fi
 
 cd /tmp
 fonts=( 
