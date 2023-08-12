@@ -1,6 +1,6 @@
 #!/bin/bash
 #Build prerequisites
-sudo nala install ninja-build gettext cmake unzip curl
+sudo nala install -y ninja-build gettext cmake unzip curl
 
 # XSessions and qtile.desktop
 if [[ ! -d ~/Repository ]]; then
